@@ -65,6 +65,7 @@ func checkError(e error) {
 }
 
 func addRoutes() {
+	bot.AddRoute("start", helpAction)
 	bot.AddRoute("help", helpAction)
 	bot.AddRoute("play", playAction)
 	bot.ListenCallbackQuery(callbackQueryListener)
