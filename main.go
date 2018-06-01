@@ -159,7 +159,7 @@ func createGame(req tbf.Request) (*gosweep.Minefield, error) {
 
 	req.QuickMessage("Enter minefield height:")
 	height, err := strconv.ParseInt(req.WaitNext().Message.Text, 10, 32)
-	if err != nil || width < minSize || width > maxSize {
+	if err != nil || height < minSize || height > maxSize {
 		return nil, fmt.Errorf("Height should be in between `%d` and `%d`", minSize, maxSize)
 	}
 
