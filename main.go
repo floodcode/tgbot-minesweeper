@@ -68,10 +68,10 @@ func addRoutes() {
 	bot.AddRoute("start", helpAction)
 	bot.AddRoute("help", helpAction)
 	bot.AddRoute("play", playAction)
-	bot.ListenCallbackQuery(callbackQueryListener)
+	bot.OnCallbackQuery(callbackQueryListener)
 }
 
-func helpAction(req tbf.BotRequest) {
+func helpAction(req tbf.Request) {
 	req.QuickMessageMD(fmt.Sprintf(strings.Join([]string{
 		"Available commads:",
 		"/help - Get this message",
@@ -79,7 +79,7 @@ func helpAction(req tbf.BotRequest) {
 	}, "\n")))
 }
 
-func playAction(req tbf.BotRequest) {
+func playAction(req tbf.Request) {
 	game, err := createGame(req)
 	if err != nil {
 		req.QuickMessageMD(err.Error())
@@ -108,7 +108,7 @@ func callbackQueryListener(req tbf.CallbackQueryRequest) {
 
 	game, ok := games[msg.MessageID]
 	if !ok {
-		req.Answer(tgbot.AnswerCallbackQueryConfig{})
+		req.NoAnswer()
 		return
 	}
 
@@ -133,7 +133,7 @@ func callbackQueryListener(req tbf.CallbackQueryRequest) {
 	}
 
 	if len(notificationText) == 0 {
-		req.Answer(tgbot.AnswerCallbackQueryConfig{})
+		req.NoAnswer()
 		return
 	}
 
@@ -150,7 +150,7 @@ func callbackQueryListener(req tbf.CallbackQueryRequest) {
 	})
 }
 
-func createGame(req tbf.BotRequest) (*gosweep.Minefield, error) {
+func createGame(req tbf.Request) (*gosweep.Minefield, error) {
 	req.QuickMessage("Enter minefield width:")
 	width, err := strconv.ParseInt(req.WaitNext().Message.Text, 10, 32)
 	if err != nil || width < minSize || width > maxSize {
