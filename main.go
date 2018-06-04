@@ -22,9 +22,7 @@ const (
 )
 
 var (
-	bot       tbf.TelegramBotFramework
-	botConfig BotConfig
-	games     = map[int]*gosweep.Minefield{}
+	games = map[int]*gosweep.Minefield{}
 )
 
 // BotConfig contains bot's environment variables
@@ -43,32 +41,23 @@ func main() {
 	configData, err := ioutil.ReadFile(configPath)
 	checkError(err)
 
-	err = json.Unmarshal(configData, &botConfig)
+	var config BotConfig
+	err = json.Unmarshal(configData, &config)
 	checkError(err)
 
-	bot, err = tbf.New(botConfig.Token)
+	bot, err := tbf.New(config.Token)
 	checkError(err)
 
-	addRoutes()
-
-	err = bot.Poll(tbf.PollConfig{
-		Delay: botConfig.Delay,
-	})
-
-	checkError(err)
-}
-
-func checkError(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func addRoutes() {
 	bot.AddRoute("start", helpAction)
 	bot.AddRoute("help", helpAction)
 	bot.AddRoute("play", playAction)
 	bot.OnCallbackQuery(callbackQueryListener)
+
+	err = bot.Poll(tbf.PollConfig{
+		Delay: config.Delay,
+	})
+
+	checkError(err)
 }
 
 func helpAction(req tbf.Request) {
@@ -231,4 +220,10 @@ func renderCell(cell gosweep.Cell) string {
 	}
 
 	return fmt.Sprint(cell.Type)
+}
+
+func checkError(e error) {
+	if e != nil {
+		panic(e)
+	}
 }
